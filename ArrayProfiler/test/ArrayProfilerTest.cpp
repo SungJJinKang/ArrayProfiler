@@ -1,6 +1,5 @@
 #include "../ArrayProfiler.h"
 
-#include <cstring>
 #include <cstdlib>
 #include <new>
 #include <cassert>
@@ -35,6 +34,7 @@ namespace arrayProfiler
 		inline void Push_Back(ELEMENT_TYPE&& element);
 		template<typename... ARGS>
 		inline void Emplace_Back(ARGS&&... args);
+		inline bool Empty() const;
 		inline size_t Count() const;
 		inline size_t Capacity() const;
 		inline ELEMENT_TYPE& operator[](const size_t index);
@@ -46,16 +46,13 @@ namespace arrayProfiler
 	template <typename ELEMENT_TYPE>
 	inline void TestArray<ELEMENT_TYPE>::Destroy()
 	{
-		if (mBufferBegin != nullptr)
+		const size_t elementCount = mBufferEnd - mBufferBegin;
+		for (size_t elementIndex = 0; elementIndex < elementCount; elementIndex++)
 		{
-			const size_t elementCount = mBufferEnd - mBufferBegin;
-			for (size_t elementIndex = 0; elementIndex < elementCount; elementIndex++)
-			{
-				mBufferBegin[elementIndex].~ELEMENT_TYPE();
-			}
-
-			std::free(mBufferBegin);
+			mBufferBegin[elementIndex].~ELEMENT_TYPE();
 		}
+
+		std::free(mBufferBegin);
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -67,22 +64,24 @@ namespace arrayProfiler
 	}
 
 	template <typename ELEMENT_TYPE>
-	inline void TestArray<ELEMENT_TYPE>::Reallocate(const size_t reallocElementCount)
+	inline void TestArray<ELEMENT_TYPE>::Reallocate(const size_t reAllocElementCount)
 	{
-		assert(reallocElementCount > Count());
+		assert(reAllocElementCount > Count());
 
-		ELEMENT_TYPE* const tempBufferBegin = reinterpret_cast<ELEMENT_TYPE*>(std::malloc(reallocElementCount * sizeof(ELEMENT_TYPE)));
+		ELEMENT_TYPE* const newlyAllocatedBufferBegin = reinterpret_cast<ELEMENT_TYPE*>(std::malloc(reAllocElementCount * sizeof(ELEMENT_TYPE)));
 
 		const size_t currentElementCount = Count();
 
 		for (size_t elementIndex = 0; elementIndex < currentElementCount; elementIndex++)
 		{
-			new (tempBufferBegin + elementIndex) ELEMENT_TYPE(std::move(mBufferBegin[elementIndex]));
+			new (newlyAllocatedBufferBegin + elementIndex) ELEMENT_TYPE(std::move(mBufferBegin[elementIndex]));
 		}
 
-		mBufferBegin = tempBufferBegin;
-		mBufferEnd = tempBufferBegin + currentElementCount;
-		mBufferCapacityEnd = tempBufferBegin + reallocElementCount;
+		std::free(mBufferBegin);
+		
+		mBufferBegin = newlyAllocatedBufferBegin;
+		mBufferEnd = newlyAllocatedBufferBegin + currentElementCount;
+		mBufferCapacityEnd = newlyAllocatedBufferBegin + reAllocElementCount;
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -235,6 +234,12 @@ namespace arrayProfiler
 	}
 
 	template <typename ELEMENT_TYPE>
+	inline bool TestArray<ELEMENT_TYPE>::Empty() const
+	{
+		return (mBufferBegin == mBufferEnd);
+	}
+
+	template <typename ELEMENT_TYPE>
 	inline size_t TestArray<ELEMENT_TYPE>::Count() const
 	{
 		return mBufferEnd - mBufferBegin;
@@ -264,15 +269,20 @@ namespace arrayProfiler
 
 int main()
 {
-	arrayProfiler::TestArray<float> testArray{};
-	testArray.Emplace_Back(10);
-	testArray.Emplace_Back(15);
-	testArray.Emplace_Back(20);
-	testArray.Push_Back(30);
-	testArray.Emplace_Back(30);
+	
+	arrayProfiler::TestArray<size_t> testArray{};
+	for(size_t i = 0 ; i < 100 ; i++)
+	{
+		testArray.Push_Back(i);
+	}
 
-	assert(testArray[2] == 20);
-	assert(testArray[4] == 30);
+	assert(testArray[50] == 50);
+	assert(testArray[21] == 21);
+
+	testArray.~TestArray();
+	
+
+	_CrtDumpMemoryLeaks();
 
 	return 0;
 }
