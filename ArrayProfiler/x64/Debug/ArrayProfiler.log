@@ -1,0 +1,9 @@
+﻿  ArrayProfilerTest.cpp
+C:\ArrayProfiler\ArrayProfiler\test\ArrayProfilerTest.cpp(233,32): warning C4244: 'initializing': conversion from 'int' to 'ELEMENT_TYPE', possible loss of data
+          with
+          [
+              ELEMENT_TYPE=float
+          ]
+C:\ArrayProfiler\ArrayProfiler\test\ArrayProfilerTest.cpp(268): message : see reference to function template instantiation 'void arrayProfiler::TestArray<float>::Emplace_Back<int>(int &&)' being compiled
+C:\ArrayProfiler\ArrayProfiler\test\ArrayProfilerTest.cpp(268): message : see reference to function template instantiation 'void arrayProfiler::TestArray<float>::Emplace_Back<int>(int &&)' being compiled
+  ArrayProfiler.vcxproj -> C:\ArrayProfiler\ArrayProfiler\x64\Debug\ArrayProfiler.exe
