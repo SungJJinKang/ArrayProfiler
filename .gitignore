@@ -72,3 +72,9 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+ArrayProfiler/x64/Debug/ArrayProfiler.ilk
+ArrayProfiler/x64/Debug/ArrayProfiler.log
+ArrayProfiler/x64/Debug/ArrayProfiler.pdb
+ArrayProfiler/x64/Debug/vc143.idb
+ArrayProfiler/x64/Debug/vc143.pdb
+ArrayProfiler/x64/Debug/ArrayProfiler.tlog/CL.read.1.tlog
