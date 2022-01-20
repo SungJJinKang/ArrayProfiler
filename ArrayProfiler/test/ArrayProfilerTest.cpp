@@ -82,6 +82,8 @@ namespace arrayProfiler
 		mBufferBegin = newlyAllocatedBufferBegin;
 		mBufferEnd = newlyAllocatedBufferBegin + currentElementCount;
 		mBufferCapacityEnd = newlyAllocatedBufferBegin + reAllocElementCount;
+
+		ARRAY_PROFILER_ARRAY_IMPLICIT_REALLOCATION(reAllocElementCount)
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -98,7 +100,7 @@ namespace arrayProfiler
 		mBufferEnd{ nullptr },
 		mBufferCapacityEnd{ nullptr }
 	{
-
+		ARRAY_PROFILER_ARRAY_CONSTRUCTOR
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -106,6 +108,8 @@ namespace arrayProfiler
 	{
 		Destroy();
 		NullifyBufferPtr();
+
+		ARRAY_PROFILER_ARRAY_DESTRUCTOR
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -127,6 +131,8 @@ namespace arrayProfiler
 		{
 			NullifyBufferPtr();
 		}
+
+		ARRAY_PROFILER_ARRAY_CONSTRUCTOR
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -137,6 +143,8 @@ namespace arrayProfiler
 		mBufferCapacityEnd = testArray.mBufferCapacityEnd;
 
 		testArray.NullifyBufferPtr();
+
+		ARRAY_PROFILER_ARRAY_CONSTRUCTOR
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -171,6 +179,8 @@ namespace arrayProfiler
 				new (mBufferBegin + elementIndex) ELEMENT_TYPE(testArray.mBufferBegin[elementIndex]);
 			}
 		}
+
+		ARRAY_PROFILER_ARRAY_CONSTRUCTOR
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -183,6 +193,8 @@ namespace arrayProfiler
 		mBufferCapacityEnd = testArray.mBufferCapacityEnd;
 
 		testArray.NullifyBufferPtr();
+
+		ARRAY_PROFILER_ARRAY_CONSTRUCTOR
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -192,6 +204,8 @@ namespace arrayProfiler
 		{
 			Reallocate(reservationCount);
 		}
+
+		ARRAY_PROFILER_ARRAY_RESERVE(reservationCount)
 	}
 
 	
@@ -264,7 +278,32 @@ namespace arrayProfiler
 		assert(Count() > index);
 		return mBufferBegin[index];
 	}
+
+	class TestClass
+	{
+		int data1;
+		int data2;
+		int data3;
+
+		TestClass()
+			: data1{ 0 }, data2{ 0 }, data3{ 0 }
+		{
+			
+		}
+		
+		TestClass(int a, int b, int c)
+			: data1{a}, data2{ b }, data3{ c }
+		{
+
+		}
+
+		~TestClass()
+		{
+			
+		}
+	};
 }
+
 
 
 int main()
