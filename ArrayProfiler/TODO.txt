@@ -1,0 +1,33 @@
+구현 계획 :
+
+기존 STL의 Array ( vector ) 함수들에 매크로를 넣어서 ArrayProfiler 기능 지원.
+기존 프로젝트에 영향 거의 안줌. 프로그래머가 따로 신경써야할 것 없다.
+
+ArrayProfiler가 추적(보관)하는 데이터 목록 :
+
+1. Array 오브젝트를 생성한 위치. ( 같은 위치에서 오브젝트가 여러번 생성되는 경우도 처리, 평균값, 최대값 ....)
+2. Array의 Reallocation 횟수 ( Reserve, Resize 함수에 의해 Reallocation된건지, buffer가 다 차서 implicit하게 Reallocation된건지 구분 )
+3. 프로그래머에 의해 Array::Reserve ( 의도적으로 capacity를 늘림 )가 호출된 횟수
+4. 평균, 최대 size 값 ( 사용 중인 element 개수 )
+5. 초기 Reserve한 Element 개수 ( Implicit Reallocation이 발생하기 전 Explicit Reallocation 한 경우 )
+
+
+ArrayProfiler가 제공하는 데이터 :
+
+1. Reserve 사용을 추천.
+2. In-place array 사용을 추천. ( 힙 할당이 필요없는 내부 buffer, 이 버퍼 사이즈 넘었을 때 힙 할당. )
+3. 
+
+
+
+-----------------------------------------
+
+프로그램이 끝나면 자동으로 모아두었던 데이터를 파일 형태로 출력해주는 방식으로 구현.
+그 후 외부 프로그램 ( 내가 만듬 )으로 그 파일을 읽어가는 방식으로 구현.
+
+외부 프로그램은 UI로 보기 편하게. 
+외부 프로그램은 C#으로 작성.
+DIA SDK 사용해서 PDB 파일 파싱해서 클릭하면 해당 Array 생성 위치로 이동할 수 있게 지원
+https://docs.microsoft.com/en-us/visualstudio/debugger/debug-interface-access/debug-interface-access-sdk?view=vs-2022
+
+혹은 이거 사용 https://github.com/dotnet/symreader-portable

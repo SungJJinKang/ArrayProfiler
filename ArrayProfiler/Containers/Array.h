@@ -1,12 +1,10 @@
-#include "../ArrayProfiler.h"
-
-#include <cstdlib>
-#include <new>
+#pragma once
 #include <cassert>
-#include <utility>
+#include <stdlib.h>
 
 namespace arrayProfiler
 {
+
 	template <typename ELEMENT_TYPE>
 	class Array
 	{
@@ -40,7 +38,7 @@ namespace arrayProfiler
 		inline ELEMENT_TYPE& operator[](const size_t index);
 		inline const ELEMENT_TYPE& operator[](const size_t index) const;
 
-		
+
 	};
 
 	template <typename ELEMENT_TYPE>
@@ -52,7 +50,7 @@ namespace arrayProfiler
 			mBufferBegin[elementIndex].~ELEMENT_TYPE();
 		}
 
-		std::free(mBufferBegin);
+		free(mBufferBegin);
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -68,22 +66,21 @@ namespace arrayProfiler
 	{
 		assert(reAllocElementCount > Count());
 
-		ELEMENT_TYPE* const newlyAllocatedBufferBegin = reinterpret_cast<ELEMENT_TYPE*>(std::malloc(reAllocElementCount * sizeof(ELEMENT_TYPE)));
+		ELEMENT_TYPE* const newlyAllocatedBufferBegin = reinterpret_cast<ELEMENT_TYPE*>(malloc(reAllocElementCount * sizeof(ELEMENT_TYPE)));
 
 		const size_t currentElementCount = Count();
 
 		for (size_t elementIndex = 0; elementIndex < currentElementCount; elementIndex++)
 		{
-			new (newlyAllocatedBufferBegin + elementIndex) ELEMENT_TYPE(std::move(mBufferBegin[elementIndex]));
+			new (newlyAllocatedBufferBegin + elementIndex) ELEMENT_TYPE(move(mBufferBegin[elementIndex]));
 		}
 
-		std::free(mBufferBegin);
-		
+		free(mBufferBegin);
+
 		mBufferBegin = newlyAllocatedBufferBegin;
 		mBufferEnd = newlyAllocatedBufferBegin + currentElementCount;
 		mBufferCapacityEnd = newlyAllocatedBufferBegin + reAllocElementCount;
-
-		ARRAY_PROFILER_ARRAY_IMPLICIT_REALLOCATION(reAllocElementCount)
+		
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -100,7 +97,6 @@ namespace arrayProfiler
 		mBufferEnd{ nullptr },
 		mBufferCapacityEnd{ nullptr }
 	{
-		ARRAY_PROFILER_ARRAY_CONSTRUCTOR
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -108,8 +104,6 @@ namespace arrayProfiler
 	{
 		Destroy();
 		NullifyBufferPtr();
-
-		ARRAY_PROFILER_ARRAY_DESTRUCTOR
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -118,7 +112,7 @@ namespace arrayProfiler
 		const size_t passedArrayElementSize = testArray.Count();
 		if (passedArrayElementSize > 0)
 		{
-			mBufferBegin = reinterpret_cast<ELEMENT_TYPE*>(std::malloc(passedArrayElementSize * sizeof(ELEMENT_TYPE)));
+			mBufferBegin = reinterpret_cast<ELEMENT_TYPE*>(malloc(passedArrayElementSize * sizeof(ELEMENT_TYPE)));
 			mBufferEnd = mBufferBegin + passedArrayElementSize;
 			mBufferCapacityEnd = mBufferEnd;
 
@@ -131,8 +125,6 @@ namespace arrayProfiler
 		{
 			NullifyBufferPtr();
 		}
-
-		ARRAY_PROFILER_ARRAY_CONSTRUCTOR
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -143,8 +135,6 @@ namespace arrayProfiler
 		mBufferCapacityEnd = testArray.mBufferCapacityEnd;
 
 		testArray.NullifyBufferPtr();
-
-		ARRAY_PROFILER_ARRAY_CONSTRUCTOR
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -170,7 +160,7 @@ namespace arrayProfiler
 		{
 			Destroy();
 
-			mBufferBegin = reinterpret_cast<ELEMENT_TYPE*>(std::malloc(passedArrayElementCount * sizeof(ELEMENT_TYPE)));
+			mBufferBegin = reinterpret_cast<ELEMENT_TYPE*>(malloc(passedArrayElementCount * sizeof(ELEMENT_TYPE)));
 			mBufferEnd = mBufferBegin + passedArrayElementCount;
 			mBufferCapacityEnd = mBufferEnd;
 
@@ -179,8 +169,6 @@ namespace arrayProfiler
 				new (mBufferBegin + elementIndex) ELEMENT_TYPE(testArray.mBufferBegin[elementIndex]);
 			}
 		}
-
-		ARRAY_PROFILER_ARRAY_CONSTRUCTOR
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -193,27 +181,23 @@ namespace arrayProfiler
 		mBufferCapacityEnd = testArray.mBufferCapacityEnd;
 
 		testArray.NullifyBufferPtr();
-
-		ARRAY_PROFILER_ARRAY_CONSTRUCTOR
 	}
 
 	template <typename ELEMENT_TYPE>
 	inline void Array<ELEMENT_TYPE>::Reserve(const size_t reservationCount)
 	{
-		if(reservationCount > Count())
+		if (reservationCount > Count())
 		{
 			Reallocate(reservationCount);
 		}
-
-		ARRAY_PROFILER_ARRAY_RESERVE(reservationCount)
 	}
 
-	
+
 
 	template <typename ELEMENT_TYPE>
 	inline void Array<ELEMENT_TYPE>::Push_Back(const ELEMENT_TYPE& element)
 	{
-		if(Count() == Capacity())
+		if (Count() == Capacity())
 		{
 			Expand();
 		}
@@ -230,7 +214,7 @@ namespace arrayProfiler
 			Expand();
 		}
 
-		*mBufferEnd = std::move(element);
+		*mBufferEnd = move(element);
 		mBufferEnd++;
 	}
 
@@ -243,7 +227,7 @@ namespace arrayProfiler
 			Expand();
 		}
 
-		new (mBufferEnd) ELEMENT_TYPE(std::move(args)...);
+		new (mBufferEnd) ELEMENT_TYPE(move(args)...);
 		mBufferEnd++;
 	}
 
@@ -279,49 +263,4 @@ namespace arrayProfiler
 		return mBufferBegin[index];
 	}
 
-	class TestClass
-	{
-		int data1;
-		int data2;
-		int data3;
-
-		TestClass()
-			: data1{ 0 }, data2{ 0 }, data3{ 0 }
-		{
-			
-		}
-		
-		TestClass(int a, int b, int c)
-			: data1{a}, data2{ b }, data3{ c }
-		{
-
-		}
-
-		~TestClass()
-		{
-			
-		}
-	};
-}
-
-
-
-int main()
-{
-	
-	arrayProfiler::Array<size_t> testArray{};
-	for(size_t i = 0 ; i < 100 ; i++)
-	{
-		testArray.Push_Back(i);
-	}
-
-	assert(testArray[50] == 50);
-	assert(testArray[21] == 21);
-
-	testArray.~Array();
-	
-
-	_CrtDumpMemoryLeaks();
-
-	return 0;
 }

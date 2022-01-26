@@ -144,9 +144,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ArrayProfiler.h" />
+    <ClInclude Include="ArrayProfilerMacros.h" />
+    <ClInclude Include="Containers\Array.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="TODO.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

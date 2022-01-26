@@ -1,61 +1,10 @@
 #pragma once
 
-
-#if defined(__GNUC__)  || defined( __clang__)
-
-#  define ARRAY_PROFILER_FORCE_INLINE inline __attribute__ ((always_inline))
-#  define ARRAY_PROFILER_NEVER_INLINE __attribute__ ((noinline))
-#  define ARRAY_PROFILER_CURRENT_CPP_VERSION __cplusplus
-#  define ARRAY_PROFILER_RETURN_ADDRESS __builtin_return_address(0)
-
-#elif defined(_MSC_VER)
-
-#  define ARRAY_PROFILER_FORCE_INLINE __forceinline
-#  define ARRAY_PROFILER_NEVER_INLINE __declspec(noinline)
-#  define ARRAY_PROFILER_CURRENT_CPP_VERSION _MSVC_LANG 
-#  define ARRAY_PROFILER_RETURN_ADDRESS _ReturnAddress()
-
-#endif
-
-#define ARRAY_PROFILER
-
-#ifdef ARRAY_PROFILER
-
-#ifndef ARRAY_PROFILER_ARRAY_CONSTRUCTOR
-#define ARRAY_PROFILER_ARRAY_CONSTRUCTOR																\
-
-
-#endif
-
-#ifndef ARRAY_PROFILER_ARRAY_DESTRUCTOR
-#define ARRAY_PROFILER_ARRAY_DESTRUCTOR
-#endif
-
-#ifndef ARRAY_PROFILER_ARRAY_RESERVE
-#define ARRAY_PROFILER_ARRAY_RESERVE(RESERVE_ELEMENT_COUNT)
-#endif
-
-#ifndef ARRAY_PROFILER_ARRAY_IMPLICIT_REALLOCATION
-#define ARRAY_PROFILER_ARRAY_IMPLICIT_REALLOCATION(REALLOCATED_ELEMENT_COUNT)
-#endif
-
-
-#else
-
-#ifndef ARRAY_PROFILER_ARRAY_CONSTRUCTOR
-#define ARRAY_PROFILER_ARRAY_CONSTRUCTOR
-#endif
-
-#ifndef ARRAY_PROFILER_ARRAY_DESTRUCTOR
-#define ARRAY_PROFILER_ARRAY_DESTRUCTOR
-#endif
-
-#ifndef ARRAY_PROFILER_ARRAY_RESERVE
-#define ARRAY_PROFILER_ARRAY_RESERVE(RESERVE_ELEMENT_COUNT)
-#endif
-
-#ifndef ARRAY_PROFILER_ARRAY_IMPLICIT_REALLOCATION
-#define ARRAY_PROFILER_ARRAY_IMPLICIT_REALLOCATION(REALLOCATED_ELEMENT_COUNT)
-#endif
-
-#endif
+namespace arrayProfiler
+{
+	extern void RegisterArray_Construct(const void* const arrayLocation, const void* const constructedCodeLocation);
+	extern void RegisterArray_Destruct(const void* const arrayLocation);
+	extern void RegisterArray_ExplicitReserve(const void* const arrayLocation, const size_t reservationSize);
+	extern void RegisterArray_BufferReallocation(const void* const arrayLocation, const size_t reservationSize);
+	extern void RegisterArray_ElementCountUpdated(const void* const arrayLocation, const size_t currentElementCount);
+}
