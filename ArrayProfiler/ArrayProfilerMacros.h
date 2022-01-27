@@ -13,7 +13,10 @@
 
 #  define ARRAY_PROFILER_FORCE_INLINE __forceinline
 #  define ARRAY_PROFILER_NEVER_INLINE __declspec(noinline)
-#  define ARRAY_PROFILER_CURRENT_CPP_VERSION _MSVC_LANG 
+#  define ARRAY_PROFILER_CURRENT_CPP_VERSION _MSVC_LANG
+
+#include <intrin.h>
+#pragma intrinsic(_ReturnAddress)
 #  define ARRAY_PROFILER_RETURN_ADDRESS _ReturnAddress()
 
 #endif

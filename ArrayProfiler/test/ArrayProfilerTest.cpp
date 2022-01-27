@@ -18,7 +18,7 @@ namespace arrayProfiler
 
 		inline void Destroy();
 		inline void NullifyBufferPtr();
-		inline void Reallocate(const size_t size);
+		inline void ResizeGrow(const size_t size);
 		inline void Expand();
 
 	public:
@@ -64,7 +64,7 @@ namespace arrayProfiler
 	}
 
 	template <typename ELEMENT_TYPE>
-	inline void Array<ELEMENT_TYPE>::Reallocate(const size_t reAllocElementCount)
+	inline void Array<ELEMENT_TYPE>::ResizeGrow(const size_t reAllocElementCount)
 	{
 		assert(reAllocElementCount > Count());
 
@@ -90,7 +90,7 @@ namespace arrayProfiler
 	inline void Array<ELEMENT_TYPE>::Expand()
 	{
 		const size_t currentCapacity = Capacity();
-		Reallocate(currentCapacity == 0 ? (1) : (currentCapacity * 2));
+		ResizeGrow(currentCapacity == 0 ? (1) : (currentCapacity * 2));
 	}
 
 	template <typename ELEMENT_TYPE>
@@ -202,10 +202,11 @@ namespace arrayProfiler
 	{
 		if(reservationCount > Count())
 		{
-			Reallocate(reservationCount);
+			ResizeGrow(reservationCount);
+			ARRAY_PROFILER_ARRAY_EXPLICIT_RESERVE(reservationCount);
 		}
 
-		ARRAY_PROFILER_ARRAY_RESERVE(reservationCount)
+		
 	}
 
 	
